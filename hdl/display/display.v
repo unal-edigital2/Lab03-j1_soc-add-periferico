@@ -1,6 +1,43 @@
-module display( input [7:0] bcd, output [6:0] sseg_d1, output [6:0] sseg_d2);
+module display(
+    input [15:0] num,
+    input clk,
+    output [0:6] sseg,
+    output reg [3:0] an,
+    input rst
+    );
 
-// tambien colocar las señales de control que hacen falta en el bloque ejemplo clk
-//colocar aca el codigo que hace falta y que ya lo tienen de los laboratorios anteriores
+
+reg [3:0]bcd=0;
+ 
+BCDtoSSeg bcdtosseg(.BCD(bcd), .SSeg(sseg));
+
+reg [26:0] cfreq=0;
+wire enable;
+
+assign enable = cfreq[16];
+always @(posedge clk) begin
+  if(rst==1) begin
+		cfreq <= 0;
+	end else begin
+		cfreq <=cfreq+1;
+	end
+end
+
+reg [1:0] count =0;
+always @(posedge enable) begin
+		if(rst==1) begin
+			count<= 0;
+			an<=4'b1111; 
+		end else begin 
+			count<= count+1;
+			an<=4'b1101; 
+			case (count) 
+				2'h0: begin bcd <= num[3:0];   an<=4'b1110; end 
+				2'h1: begin bcd <= num[7:4];   an<=4'b1101; end 
+				2'h2: begin bcd <= num[11:8];  an<=4'b1011; end 
+				2'h3: begin bcd <= num[15:12]; an<=4'b0111; end 
+			endcase
+		end
+end
 
 endmodule

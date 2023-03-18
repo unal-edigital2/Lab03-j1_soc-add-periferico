@@ -1,4 +1,7 @@
-module uart(
+module uart#(
+	parameter          clk_freq = 100000000,
+	parameter          baud     = 115200
+)(
    // Outputs
    uart_busy,   // High means UART is transmitting
    uart_tx,     // UART transmit wire
@@ -27,7 +30,7 @@ module uart(
   // sys_clk_i is 68MHz.  We want a 115200Hz clock
 
   reg [28:0] d;
-  wire [28:0] dInc = d[28] ? (115200) : (115200 - 100000000);
+  wire [28:0] dInc = d[28] ? (baud) : (baud - clk_freq);
   wire [28:0] dNxt = d + dInc;
   wire ser_clk = ~d[28];
   always @(posedge sys_clk_i)

@@ -4,7 +4,8 @@ module j1soc#(
       parameter   uart_baud_rate   = 115200
 )(
    uart_tx, uart_rx, ledout, ledb, ledb2,
-   sys_clk_i, sys_rst_i
+   sys_clk_i, sys_rst_i,
+   seg, an
 );
    input  sys_clk_i, sys_rst_i;
    input  uart_rx;
@@ -12,6 +13,10 @@ module j1soc#(
    output ledout;
    output ledb;
    output ledb2;
+   output [6:0]seg;
+   output [3:0]an;
+   
+   
 //------------------------------------ regs and wires-------------------------------
    wire                 j1_io_rd;//********************** J1
    wire                 j1_io_wr;//********************** J1
@@ -79,26 +84,25 @@ module j1soc#(
      .ledout(ledout)
    );
 
-/*  peripheral_display per_d7s(
+  peripheral_display per_d7s(
     .clk(sys_clk_i), 
     .rst(~sys_rst_i), 
     .d_in(j1_io_dout), 
-    .cs(cs[]), 
+    .cs(cs[4]), 
     .addr(j1_io_addr[3:0]), 
     .rd(j1_io_rd), 
     .wr(j1_io_wr), 
-    .d_out(display_dout), 
-    .sseg_d1(sseg_d1), 
-    .sseg_d2(sseg_d2)
+    .sseg(seg),
+    .anodos(an) 
     );
 
-*/
+
 
   dpRAM_interface 
     dpRm(
     .clk(sys_clk_i), 
     .d_in(j1_io_dout), 
-    .cs(cs[4]), 
+    .cs(cs[5]), 
     .addr(j1_io_addr[7:0]), 
     .rd(j1_io_rd), 
     .wr(j1_io_wr), 
